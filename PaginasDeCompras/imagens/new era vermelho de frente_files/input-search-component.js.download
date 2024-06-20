@@ -1,0 +1,53 @@
+class InputSearchComponent extends HTMLElement {
+    constructor() {
+        super();
+        // Creates a shadow root for the component
+        this.attachShadow({ mode: "open" });
+
+        // Loads the template from the HTML file
+        this.shadowRoot.innerHTML = `
+            <style>
+                @import url("/vendor/dafiti/bootstrap/dist/components/input-search/css/input-search.css");
+                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&family=Roboto:wght@400;700&display=swap');
+            </style>
+            <input type="text"></input>
+        `;
+    }
+
+    connectedCallback() {
+        // Update the input content
+        const input = this.shadowRoot.querySelector('input');
+
+        if (this.hasAttribute('placeholder')) {
+            input.setAttribute("placeholder", this.getAttribute('placeholder'));
+        }
+
+        if (this.hasAttribute('name')) {
+            input.setAttribute("name", this.getAttribute('name'));
+        }
+
+        // Adds an event listener to capture input changes
+        input.addEventListener('input', this.handleInputChange.bind(this));
+
+        if (this.hasAttribute('class')) {
+            input.classList.add(this.getAttribute('class'));
+        }
+    }
+
+    handleInputChange(event) {
+        // Fire a 'value-change' custom event with the input value
+        const customEvent = new CustomEvent('value-change', {
+            bubbles: true, // Allow event to propagate to parent elements
+            composed: true, // Allow event to traverse shadow DOM boundaries
+            detail: {
+                value: event.target.value, // Input's current value
+                name: event.target.name // Input's current name
+            }
+        });
+        const input = this.shadowRoot.querySelector('input');
+        input.setAttribute("value", event.target.value);
+        this.dispatchEvent(customEvent);
+    }
+  }
+
+  customElements.get('input-search-component') || customElements.define("input-search-component", InputSearchComponent);

@@ -1,0 +1,13 @@
+	var updateData = {"visitorLoginState":"No","visitorId":"0b9pfhbjvahs86bbme42j6scc6","visitorSessionID":"0b9pfhbjvahs86bbme42j6scc6","visitorType":"new customer","visitorLifetimeValue":0};
+
+window.onload = function() {
+	var eventObj = {
+	"event": "tray.updateGTM"
+	};
+	updateData = jQuery.extend(updateData, {
+		"siteSearchFrom": document.referrer
+	});
+	dataLayer.push(jQuery.extend(eventObj, updateData));
+
+	console.info('[DataLayer] UpdateGTM executed.')
+};

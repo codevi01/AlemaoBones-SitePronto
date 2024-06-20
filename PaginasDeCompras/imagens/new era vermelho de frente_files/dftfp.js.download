@@ -1,0 +1,69 @@
+"use strict";
+((w) => {
+  if (!w.V || !w.FingerprintJS) return;
+  const { Cookie } = w.V;
+
+  const Calculator = {
+    parity(string, size = string.length + 2) {
+      const digits = this.digits(string);
+      const rest = size - 2;
+      const part = Math.ceil(rest / 2);
+      const start = string.substring(0, part);
+      const end = string.substring(string.length - rest + part);
+      return String().concat(start, end, digits);
+    },
+    digits(string) {
+      let first = this.digit(string);
+      first = first < 2 ? 0 : first;
+      const second = this.digit(string + first);
+      return String().concat(first, second);
+    },
+    digit(string) {
+      const sum = [...string].reduceRight((sum, char, idx) => {
+        const number = Number(`0x${char}`);
+        const factor = ((string.length - idx - 1) % 14) + 2;
+        return sum + number * factor;
+      }, 0);
+      const digit = sum % 16;
+      return Number(digit).toString(16);
+    },
+  };
+
+  const Fingerprint = {
+    dftfp: Cookie.get("DFTFP"),
+    customer: Cookie.get("customer"),
+    async bootstrap() {
+      if (this.dftfp?.length == 32) {
+        Cookie.set("DFTFP", null, {
+          expires: -400,
+          path: "/",
+        });
+        this.dftfp = null;
+      }
+      if (!this.dftfp && this.customer) {
+        const hash = await this.issue(this.customer);
+        Cookie.set("DFTFP", hash, {
+          expires: 400,
+          path: "/",
+          domain: this.getDomain(true),
+        });
+      }
+    },
+    async issue(salt) {
+      const fp = await FingerprintJS.load();
+      const { visitorId } = await fp.get();
+      const parity = Calculator.parity(salt, 8);
+      return String().concat(visitorId, parity);
+    },
+    getDomain(isRelative) {
+      const hostname = w.location.hostname;
+      let start = hostname.search(
+        /(dafiti|qa\.aws\.dafitidev)\.(com\.(ar|br|co)|cl|local)$/
+      );
+      let domain = hostname.substring(start);
+      return isRelative ? `.${domain}` : domain;
+    },
+  };
+
+  Fingerprint.bootstrap();
+})(window);

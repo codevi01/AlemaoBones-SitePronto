@@ -1,0 +1,81 @@
+document.addEventListener("load", function() { 
+    // carregou o DOM
+    function leadsCatcher(store, formType)
+    {
+        this.store = store;
+        this.formType = formType;
+        this.formSelector;
+        this.inputSelector;
+        this.event = 'submit';
+        this.getSelectors();
+        this.catchLead();
+    }
+
+    leadsCatcher.prototype.validateEmail = function(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    };
+
+    leadsCatcher.prototype.catchLead = function() {
+        var obj = this;
+        selector = this.event == 'focusout' ? this.inputSelector : this.formSelector;
+        document.querySelector(selector).addEventListener(this.event, function() {
+            var email = document.querySelector(obj.inputSelector).value;
+            if (obj.validateEmail(email)) {
+                //PADRONIZATION WHERE ARE YOU?
+                encoded = window.btoa(email);
+                if (obj.store == 'dafiti.com.br' || obj.store == 'kanui.com.br' || obj.store == 'tricae.com.br') {
+                    cookieControl.createCookie('lecrm', encoded, 600, '.'+obj.store);
+                    cookieControl.createCookie('lecrm', encoded, 600, '.secure.'+obj.store);
+                } else {
+                    document.cookie="lecrm="+encoded+"; expires=Fri, 01 Nov 2019 12:00:00 UTC; path=."+obj.store;
+                    document.cookie="lecrm="+encoded+"; expires=Fri, 01 Nov 2019 12:00:00 UTC; path=.secure."+obj.store;
+                }
+            }
+        })
+    };
+
+    leadsCatcher.prototype.getSelectors = function() {
+        if (this.formType == 'footer') {
+            if (this.store == 'dafiti.com.br' || this.store == 'kanui.com.br' || this.store == 'tricae.com.br') {
+                this.formSelector = '#newsletterValidateDetail';
+                this.inputSelector = '#NewsletterForm_email';
+            } else if (this.store == 'dafiti.com.co') {
+                //colombia
+                this.formSelector = "#botones[name='botonm'], #botones[name='botonf']";
+                this.inputSelector = '#newsletter-email-layover';
+                this.event = 'click'
+            } else {
+                //since latam already has a onsubmit handler on the html, had to change the event
+                this.formSelector = '#FooterNewsletter form button[name=subscription]';
+                this.inputSelector = '#newsletter-email';
+                this.event = 'click'
+            }
+        } else if (this.formType == 'modal') {
+            if (this.store == 'dafiti.com.br') {
+                if (window.location.pathname == '/') {
+                    //dynamic yield that appears on the homepage
+                    this.formSelector = '.dy_newsletter_submit';
+                    this.inputSelector = 'input[type="email"].dy_newsletter_email';
+                    this.event = 'focusout';
+                } else {
+                    //bounce exchange that appears on catalog/other pages
+                    this.formSelector = '#dy_newsletter_form';
+                    this.inputSelector = '.dy_newsletter_email';
+                    this.event = 'focusout';
+                }
+            } else if (this.store == 'dafiti.com.co' || this.store == 'dafiti.cl') {
+                this.formSelector = '.form';
+                this.inputSelector = 'input.input_email[name="email"]';    
+            }
+            else {
+                this.formSelector = '#form-dy-news';
+                this.inputSelector = 'input.input-mail[name="email"]';
+            }
+        }
+    };
+
+    store = window.location.hostname.replace("www.", "");
+    l1 = new leadsCatcher(store, 'footer');
+    l2 = new leadsCatcher(store, 'modal');
+});

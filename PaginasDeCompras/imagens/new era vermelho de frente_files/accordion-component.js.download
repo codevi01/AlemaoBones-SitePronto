@@ -1,0 +1,101 @@
+class AccordionItem extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+
+        this.isOpen = false; // Accordion initial state (closed)
+        const downImage = '/vendor/dafiti/bootstrap/dist/components/accordion/images/chevron_down.png';
+
+        // Loads the template from the HTML file
+        this.shadowRoot.innerHTML = `
+            <style>
+                @import url("/vendor/dafiti/bootstrap/dist/components/accordion/css/accordion.css");
+                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&family=Roboto:wght@400;700&display=swap');
+            </style>
+            <div class="accordion-header">
+                <h2 class="accordion-title"></h2>
+                <img class="accordion-toggle" src="" alt="Toggle Icon">
+            </div>
+            <div class="accordion-content">
+                <slot name="content"></slot>
+            </div>
+            <div class="divider"></div>
+       `;
+
+        this.header = this.shadowRoot.querySelector('.accordion-header');
+        this.content = this.shadowRoot.querySelector('.accordion-content');
+        this.toggleImage = this.shadowRoot.querySelector('.accordion-toggle');
+        this.toggleImage.src = downImage;
+        this.header.addEventListener('click', () => this.toggleAccordion());
+    }
+
+    connectedCallback() {
+        const titleElement = this.shadowRoot.querySelector('.accordion-title');
+        if (this.hasAttribute('title')) {
+            titleElement.textContent = this.getAttribute('title');
+        }
+
+        if (this.hasAttribute('data-accordion-content')) {
+            this.content.style = this.getAttribute('data-accordion-content');
+        }
+
+        if (this.hasAttribute('data-facet')) {
+            this.content.setAttribute('data-facet', this.getAttribute('data-facet'));
+        }
+
+        if (this.getAttribute('open')) {
+            this.toggleAccordion()
+        }
+    }
+
+    static get observedAttributes() {
+        return ['title'];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'title') {
+            this.updateTitle(newValue);
+        }
+    }
+
+    updateTitle(title) {
+        const titleElement = this.shadowRoot.querySelector('.accordion-title');
+        if (titleElement !== null && title != "") {
+            titleElement.textContent = title;
+        }
+    }
+
+    toggleAccordion() {
+        this.content.classList.toggle('active');
+        this.isOpen = !this.isOpen; // Inverts the state of the accordion
+
+        const downImage = '/vendor/dafiti/bootstrap/dist/components/accordion/images/chevron_down.png';
+        const upImage = '/vendor/dafiti/bootstrap/dist/components/accordion/images/chevron_up.png';
+
+        // Switches between images based on the state of the accordion
+        this.toggleImage = this.shadowRoot.querySelector('.accordion-toggle');
+        this.toggleImage.src = (this.isOpen) ? upImage : downImage;
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    customElements.get('accordion-item') || customElements.define('accordion-item', AccordionItem);
+});
+
+class AccordionComponent extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        const accordionComponent = `@import url('/vendor/dafiti/bootstrap/dist/components/accordion/css/accordion-component.css');`;
+        this.shadowRoot.innerHTML = `
+            <style>
+            ${accordionComponent}
+            </style>
+            <div class="accordion">
+                <slot></slot>
+            </div>
+        `;
+    }
+}
+
+customElements.get('accordion-component') || customElements.define('accordion-component', AccordionComponent);

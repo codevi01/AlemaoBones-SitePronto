@@ -1,0 +1,72 @@
+class ButtonComponent extends HTMLElement {
+    constructor() {
+        super();
+        // Creates a shadow root for the component
+        this.attachShadow({ mode: "open" });
+
+        // Loads the template from the HTML file
+        this.shadowRoot.innerHTML = `
+            <style>
+                @import url("/vendor/dafiti/bootstrap/dist/components/button/css/button.css");
+                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&family=Roboto:wght@400;700&display=swap');
+            </style>
+            <button></button>
+        `;
+    }
+
+    connectedCallback() {
+        // Update button content
+        const button = this.shadowRoot.querySelector('button');
+
+        if (this.hasAttribute('label')) {
+            button.textContent = this.getAttribute('label');
+        }
+
+        if (this.hasAttribute('action')) {
+            button.onclick = () => eval(this.getAttribute('action'));
+        }
+
+        if (this.hasAttribute('name')) {
+            button.setAttribute = this.getAttribute('name');
+        }
+
+        if (this.hasAttribute('class')) {
+            button.classList.add(this.getAttribute('class'));
+        }
+
+        if (this.hasAttribute('style')) {
+            button.style = this.getAttribute('style');
+        }
+
+        // Adds classes to the button based on the "variant" attribute
+        switch (this.getAttribute('variant')) {
+            case 'medium':
+                button.classList.add('btn-medium');
+                break;
+            case 'small':
+                button.classList.add('btn-small');
+                break;
+            default:
+                button.classList.add('btn-big');
+        }
+
+        if (this.hasAttribute("disabled")) {
+            button.disabled = true;
+            button.classList.add("disabled");
+        }
+    }
+
+    static get observedAttributes() {
+        return ['class'];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (newValue.includes('errors')) {
+            const button = this.shadowRoot.querySelector('button');
+            button.disabled = true;
+            button.classList.add("disabled");
+        }
+    }
+  }
+
+  customElements.get('button-component') || customElements.define('button-component', ButtonComponent);

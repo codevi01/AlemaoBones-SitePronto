@@ -1,0 +1,62 @@
+$(document).ready(function(){
+  
+   var id = 0
+   var hashId = customerId;
+   var from_url = 0;
+   var push_id = null;
+   var detailedSku = $("input[name='sku']").val();
+   var email = null;
+
+   //OneSignal.push(function() {
+	 // OneSignal.getUserId(function(userId) {
+		//push_id = userId;
+		//tag_generator(dataLayer[0]['ET']);
+	  //});
+	//});
+
+	function getURLParameter(name) {
+		return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+	}
+	function tag_generator(section){
+		var url_id = getURLParameter('hash_id')
+		if (hashId && hashId !== 'undefined'){
+		  id = hashId;
+		  cookieControl.createCookie('customerId',id,600,'.dafiti.com.br');
+		} else if (cookieControl.readCookie('customerId')) {
+		  id = cookieControl.readCookie('customerId');
+		} else if ((url_id != null)&(url_id != 1))   {
+		  from_url = 1;
+		  id = url_id;
+		  cookieControl.createCookie('customerId',id,600,'.dafiti.com.br');
+		};
+
+		if (push_id != null){
+			cookieControl.createCookie('w_push',push_id,10000,'.dafiti.com.br');
+		}
+
+		productSku = section == 'cartpage' ? detailedSku : dataLayer.find(obj => "sku" in obj)?.["sku"];
+
+		if (cookieControl.readCookie('lecrm')) {
+			email = window.atob(cookieControl.readCookie('lecrm'));
+		}
+
+		var img = $("<img />").attr('src', 'https://kibana-mkt.dafiti.com.br/track/pixo.gif?pageType='+section+'&customerId='+id+'&url='+window.location.href +'&productSku='+productSku+'&push_id='+push_id+'&store=DFT_BR&from_url='+from_url+'&email='+email+'&version=v4')
+		 .on('load', function() {
+			 if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0) {
+				 console.error('Image problem');
+			 }
+		 });
+  	}
+
+  	$('.col-md-4.col-sm-5 .selectbox-options .selectbox-option').click(function(){
+        detailedSku = $(this).data('value') ? $(this).data('value') : null;
+    });
+
+    $('[data-add-to-cart-form-button]').click(function(){
+        if (detailedSku) {
+            tag_generator("cartpage");
+        }
+
+    });
+    tag_generator(dataLayer.find(obj => "ET" in obj)?.ET);
+});

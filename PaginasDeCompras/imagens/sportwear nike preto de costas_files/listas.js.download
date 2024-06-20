@@ -1,0 +1,369 @@
+function mostraEnvioEmail(){
+	if ( $('envia_email').checked)
+	{
+		$('opcoes_email').show();
+	}
+	else
+	{
+		$('opcoes_email').hide();
+	}
+}
+
+
+function volta_input(id,tipo){
+
+	$(id+'_erro').innerHTML = '';
+	$(id+'_erro').style.display = 'none';
+	var campo = '';
+	if($(id).className.indexOf('opcional') < 0){
+		
+		if($(id).className.indexOf('campo') > 0){
+			campo = 'campos';
+		}
+		
+		if(tipo == 'text'){
+			$(id).className = 'text obriga '+campo;
+		}else if(tipo == 'file'){
+			$(id).className = '';
+		}else if(tipo == 'select'){
+			$(id).className = 'select '+campo;
+		}else{
+			$(id).className = 'obriga '+campo;
+		}
+	}
+	
+	if($(id+'_descricao')){
+		$(id+'_descricao').style.display = '';
+	}
+}
+
+function valida_cadastro(){
+	
+	if ($('url').value == ""){
+		$('url_erro').style.display = '';
+		$('url_descricao').style.display = 'none';
+		$('url_erro').innerHTML = 'Digite uma URL para sua lista, por favor.';
+		$('url').className = 'text inputErro';
+		$('url').focus();
+		return false;
+	}
+	
+	if($('nome_lista').value==""){			
+		$('nome_lista_erro').style.display = '';
+		$('nome_lista_erro').innerHTML = 'Digite um  nome para sua lista, por favor';
+		$('nome_lista').className = 'obriga inputErro';
+		$('nome_lista').focus();
+		return false;
+	}
+	
+	if($('data')){
+		if($('data').value=='00/00/0000' || $('data').value==''){			
+			$('data_erro').style.display = '';
+			$('data_erro').innerHTML = 'Digite a Data do Evento';
+			$('data').className = 'obriga inputErro';
+			$('data').focus();
+			return false;
+		}
+	}
+	
+	if($('validade')){
+		if($('validade').value=='00/00/0000' || $('validade').value==''){			
+			$('validade_erro').style.display = '';
+			$('validade_descricao').style.display = 'none';
+			$('validade_erro').innerHTML = 'Digite o periodo de validade da lista';
+			$('validade').className = 'obriga inputErro';
+			$('validade').focus();
+			return false;
+		}
+	}
+	
+	if($('imagem_lista')){
+		if($('imagem_lista').value=='' && !$('valida_imagem')){			
+			$('imagem_lista_erro').style.display = '';
+			$('imagem_lista_descricao').style.display = 'none';
+			$('imagem_lista_erro').innerHTML = 'Escolha uma imagem para sua lista';
+			$('imagem_lista').className = 'obriga inputErro';
+			$('imagem_lista').focus();
+			return false;
+		}
+	}
+	
+	if($('mensagem')){
+		if($('mensagem').value==''){			
+			$('mensagem_erro').style.display = '';
+			$('mensagem_erro').innerHTML = 'Digite uma mensagem, por favor';
+			$('mensagem').className = 'obriga inputErro';
+			$('mensagem').focus();
+			return false;
+		}
+	}
+	
+	if($$('.campos')){
+		var campos = $$('.campos');
+		var erro = 0;
+		campos.each(function(e){
+				if(e.value == ''){
+					$(e.id+'_erro').style.display = '';
+					$(e.id+'_erro').innerHTML = 'Campo de preenchimento obrigatório';
+					$(e.id).className = 'obriga inputErro campos';
+					$(e.id).focus();
+					erro = 1;
+					throw $break;
+				}
+			});
+		if(erro == 1){
+			return false;
+		}
+	}
+
+	if($('cep_1').value=='' || $('cep_2').value==''){
+		var cep;
+		if($('cep_1').value==''){
+			cep = 1;
+		}else{
+			cep = 2;
+		}
+		$('cep_'+cep+'_erro').style.display = '';
+		$('cep_'+cep+'_erro').innerHTML = 'Digite o CEP corretamente, por favor';
+		$('cep_'+cep).focus();
+		
+		return false;
+	}
+	
+	if($('endereco_cliente').value=='' || $('numero_endereco').value==''){
+		var endereco;
+		if($('endereco_cliente').value==''){
+			endereco = 'endereco_cliente';
+		}else{
+			endereco = 'numero_endereco';
+		}
+		$(endereco+'_erro').style.display = '';
+		$(endereco+'_erro').innerHTML = 'Digite os dados de endereço, por favor';
+		$(endereco).focus();
+		return false;
+	}
+	
+	if($('bairro_cliente').value==''){			
+		$('bairro_erro').style.display = '';
+		$('bairro_erro').innerHTML = 'Digite o bairro, por favor';
+		$('bairro_cliente').className = 'obriga inputErro';
+		$('bairro_cliente').focus();
+		return false;
+	}
+	
+	if($('cidade_cliente').value==''){			
+		$('cidade_erro').style.display = '';
+		$('cidade_erro').innerHTML = 'Digite a cidade, por favor';
+		$('cidade_cliente').className = 'obriga inputErro';
+		$('cidade_cliente').focus();
+		return false;
+	}
+	
+	if($('estado_cliente').value==''){	
+		$('estado_erro').style.display = '';
+		$('estado_erro').innerHTML = 'Escolha o estado, por favor';
+		$('estado_cliente').focus();
+		return false;
+	}	
+
+	if($('#termo').length && !$('#termo').checked){
+		alert('Voce deve aceitar os termos.');
+		return false;
+	}
+
+}
+
+function alteraURL(id_lista){
+	
+	var url = $('url').value;
+ 	new Ajax.Request(
+ 		'funcoes/dados_lista_ajax.php?url='+url+'&id_lista='+id_lista,
+ 		{
+     		asynchronous:true,
+     		evalScripts:true,
+     		method: 'get',
+         	onSuccess: function(transport)
+             {
+
+         		var resposta = transport.responseText;         		
+         		if(resposta == 0){
+         			$('url_erro').style.display = '';
+         			$('url_descricao').style.display = 'none';
+         			$('url_erro').innerHTML = 'Essa URL já está cadastrada. Por favor, digite outra.';
+         			$('url').className = 'text inputErro';
+         			$('url').focus();
+         	 	}else if(resposta == 1){
+         	 		$('nova_url').innerHTML = "";
+         	 	}else{
+         	 		$('nova_url').innerHTML = resposta;
+         	 	}
+             }
+        }
+ 	);
+} 	
+
+function alteraNome(id_lista){
+	
+	var nome_lista = $('nome_lista').value;
+ 	new Ajax.Request(
+ 		'funcoes/dados_lista_ajax.php?nome='+nome_lista+'&id_lista='+id_lista,
+ 		{
+     		asynchronous:true,
+     		evalScripts:true,
+     		method: 'get',
+         	onSuccess: function(transport)
+             {
+         		var resposta = transport.responseText;
+         		if(resposta == 0){
+         			$('nome_lista_erro').style.display = '';
+         			$('nome_lista_erro').innerHTML = 'Esse Nome já está cadastrado. Por favor, digite outro.';
+         			$('nome_lista').className = 'text inputErro';
+         			$('nome_lista').focus();
+         	 	}
+             }
+        }
+ 	);
+} 
+
+function validaData(elemento){
+
+	var data = $(elemento).value;
+ 	new Ajax.Request(
+ 		'funcoes/dados_lista_ajax.php?data='+data+'&elemento='+elemento,
+ 		{
+     		asynchronous:true,
+     		evalScripts:true,
+     		method: 'get',
+         	onSuccess: function(transport)
+             {
+
+         		var resposta = transport.responseText;
+         		if(resposta == 0){
+         			$(elemento+'_erro').style.display = '';
+         			$(elemento+'_erro').innerHTML = 'Data está invalida. Por favor, digite outra.';
+         			if($(elemento+'_descricao')){
+         				$(elemento+'_descricao').style.display = 'none';
+         			}
+         			if($(elemento).className.indexOf('opcional') < 0){
+         				$(elemento).className = 'text inputErro';
+         			}
+         			$(elemento).focus();
+         	 	}
+             }
+        }
+ 	);
+		
+}
+
+
+/**
+ * Método de exclusão de Produtos da lista.
+ * @author rvera
+ * @param elemento
+ * @param id
+ * @return
+ */
+function excluirProdutoLista(elemento,idLista,idProdutoLista,loja){
+	
+	var linha = document.getElementById(elemento);
+	var tabela = linha.parentNode;	
+	tabela.removeChild(linha);	
+	atualizacaoAjax('/loja/acoes_lista.php?loja='+loja+'&id_lista='+idLista+'&id_produto_lista='+idProdutoLista+'&acao=excluir',"acoesLista");
+		
+	var mensagem = document.getElementById('exclusaoLista');
+	mensagem.style.display ="block"
+	setTimeout(function(){
+		mensagem.style.display="none";
+	},7000)
+}
+
+/**
+ * Método de alteração de quantidade de Produtos da lista.
+ * @author rvera
+ * @param elemento
+ * @param id
+ * @return
+ */
+function atualizaProdutoLista(elemento,idProdutoLista,loja,quantidade,vendidos){
+	
+	var qtd = document.getElementById(quantidade).value;
+	
+	if(qtd > vendidos){
+		atualizacaoAjax('/loja/acoes_lista.php?loja='+loja+'&id_produto_lista='+idProdutoLista+'&quantidade='+qtd+'&acao=atualizar',"acoesLista");
+		msg = 'atualizaLista';
+		document.getElementById("prod_solicitados_"+idProdutoLista).innerHTML = qtd;
+	}else{
+		msg = 'erroAtualizacao';
+	}
+		var mensagem = document.getElementById(msg);
+		mensagem.style.display ="block";
+		setTimeout(function(){
+			mensagem.style.display="none";
+		},7000);
+		
+
+		
+		
+}
+
+
+
+function atualizacaoAjax(url,div){
+	new Ajax.Updater(div,url,{asynchronous:true, evalScripts:true, requestHeaders:['X-Update', div], onComplete: function() { ancoras(); }});
+}
+
+function limpaURL(elemento) {
+	url = elemento.value;
+	elemento.value = url.replace(/[^a-zA-Z0-9_-]/i,'');
+}
+
+function enviaDadosFiltro(loja,id_evento,ordem){   
+	
+	window.location.href = "listas_busca.php?loja="+loja+"&id_evento="+id_evento+"&ordem="+ordem;  
+}
+
+function limpaFiltros(){
+
+	var elementos = $$('.listaClass');
+	
+	elementos.each( function(e){
+		e.value = '';	
+	});
+}
+
+function mostraOpcaoAvancada(){
+	
+	if($('divAvancada').style.display == 'none')
+	{
+		$('divAvancada').style.display = 'block';
+		$('exibeAvancado').value = 1;
+	}
+	else
+	{
+		$('divAvancada').style.display = 'none';
+		$('exibeAvancado').value = 0;
+	}
+}
+
+function exibeListas(param){
+	if(param == 1)
+	{
+		$('add-listas').style.display = 'block';
+	}
+	else
+	{
+		$('add-listas').style.display = 'none';
+	}
+}
+
+function valida_variants_list() {
+    var selectedVariant = jQuery('#selectedVariant').val();
+    var dataMandatory = jQuery('#menuVars').attr('data-mandatory');
+    var multiVariant = jQuery('#menuVars').attr('data-multi-variant');
+    if (selectedVariant || dataMandatory != 1 || multiVariant == 1) {
+        return true;
+    }
+
+    jQuery('#span_erro_carrinho:first').show();
+    return false;
+}

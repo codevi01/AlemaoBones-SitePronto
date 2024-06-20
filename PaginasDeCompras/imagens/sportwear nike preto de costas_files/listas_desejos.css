@@ -1,0 +1,85 @@
+
+#txt-cabecalho{padding:10px 5px;}
+#aviso_obriga{padding:10px 5px;}
+#nova_url{ color:red;}
+#termo-aceite{text-align:right; padding:5px;}
+#ver-imagem{ font-size:12px;}
+#atencao-lista{margin:0px !important;}
+#cupom-comissao{color: #990000;font-weight:normal;width:420px;}
+#cupom-comissao a{color:red;text-decoration:underline;}
+#cupom-comissao #cupom-imagem{float:left;display:block;}
+#cupom-comissao #cupom-msg{float:left;display:block;}
+#msg-envio-lista{color: #990000;font-size:12px;}
+
+#lista_criar .label{font-size: 11px !important; text-align:right !important; width:115px;}
+#lista_criar .label2{font-size: 11px !important;}
+#lista_criar .campos{ border:#ccc 1px solid;}
+#lista_criar .titulo-box{ margin-left:5px !important;}
+#lista_criar .text {
+    background: url("/assets/store/img/sombratop.png") repeat-x scroll center top #FFFFFF;
+    border: 1px solid #CCCCCC;
+    color: #666666;
+    font-size: 14px;
+    font-weight: bold;
+    height: 23px;
+    line-height: 18px;
+    margin: 0;
+}
+#lista_criar #mensagem{border:1px solid #ccc;border-left: 3px solid #CC0000;}
+#lista_criar .opcional {background-color: #F1F1F1;}
+#lista_criar .obriga { border-left: 3px solid #CC0000; height:23px;}
+#lista_criar .inputErro {border: 3px solid #CC0000;}
+#lista_criar .red {color: #CC0000;font-weight: bold;}
+#lista_criar .select {border: 1px solid #CCCCCC;color: #666666;font-size: 14px;font-weight: bold;margin: 0;}
+#lista_criar #emails tr td{vertical-align:top;}
+
+.lista-imagem {float:right;}
+.lista-produtos{border-bottom:1px dashed #ccc;margin-top:15px; padding-bottom:15px;}
+.lista-produto-imagem{width:120px;text-align:center;float:left;}
+.lista-produto-comprar{width:130px;float:right;text-align:center;margin-top:30px;}
+.lista-produto-quantidade{width:100px;float:right;text-align:center;margin-top:15px;}
+.lista-produto-adquirido{width:230px;float:right;text-align:center;margin-top:20px;}
+.lista-produto-solicitados{width:100px;float:right;text-align:center;margin-top:35px;}
+.lista-produto-valores {float:right;width:140px;margin-right:10px;}
+.lista-produto-dados{float:left;margin-right:15px;}
+.lista-produto-check{margin-top:10px;}
+.lista-produto-qtde{margin-top:10px;}
+.lista-comprar-topo{margin-top:15px;border-bottom:1px dashed #ccc; padding-bottom:15px; text-align:right;}
+.lista-comprar-rodape{margin-top:15px;padding-bottom:15px; text-align:right;}
+.lista-menu {clear:both;}
+.lista-menu li {padding:3px;}
+.lista-menu .lista-menu-destaque {background:#eaeaea;}
+
+.bloco-lista{margin:15px;}
+.bloco-lista .imagem-alerta-lista{float:left;display:block;}
+.bloco-lista .msg-alerta-lista{float:left;display:block;font-size:14px;}
+.bloco-lista #entrega-comprador{float:left;display:block;font-size:12px;text-align:center;}
+.bloco-lista #entrega-dono{	margin-left:50px;float:left;display:block;font-size:12px;text-align:center;}
+
+.lista-mensagem {width:600px;margin:20px auto;}
+
+
+.container-lista{ margin-top:30px;}
+#bloco-add-lista{ margin-top:30px;border: 1px dotted #CCCCCC;display: absolute;}
+#bloco-add-lista a{ display: block; font-size: 130%;font-weight: bold;text-decoration: none;padding: 5px;}
+.lista-unica a:hover{background: url("/assets/store/img/bg_right.gif") repeat-y scroll right center #F3F3F3; margin:0;}
+
+
+#add-listas{margin-left:60px; z-index: 9999 !important; position: absolute !important; background:#fff;border:1px solid #ccc;}
+#add-listas .listas { padding: 0;width: 100%;padding-right:50px;}
+#add-listas .listas a{font-size: 130%;font-weight: bold;padding: 5px;text-decoration: none;}
+#add-listas .listas a:hover {background: url("/assets/store/img/bg_right.gif") repeat-y scroll right center #F3F3F3;}
+
+.busca span{font-size: 11px !important;}
+.busca select{border: 1px solid #CCCCCC;color: #666666;font-size: 14px;margin: 0;}
+.busca input{background: url("/assets/store/img/sombratop.png") repeat-x scroll center top #FFFFFF;
+    border: 1px solid #CCCCCC;
+    color: #666666;
+    font-size: 14px;
+    font-weight: bold;
+    height: 23px;
+    line-height: 18px;
+    margin: 0;}
+
+#tipos-listas{list-style:none;}
+

@@ -1,0 +1,311 @@
+"use strict";
+setTimeout(function() {
+  ((w, d) => {
+    const { route } = document.body.dataset;
+    const { pageType } = w;
+    const buyPage = document.querySelector(".bar-buy-button");
+
+    if (!w.V || (route != "catalog/detail" && pageType != "productpage" && !buyPage)) return;
+    const { Storage } = w.V;
+
+    const Page = {
+      element: {
+        productPrice: "span.catalog-detail-price-value, #mainSizeSelector [data-price], .product-price",
+        addToCartForm: {
+          productInput:
+              "form#add-to-cart input[name=p], form#add-to-cart input[name=id-product], form#cartform input[name=configSku], .buy-button-pdp, .sizeSelect option",
+          sizeOptionsList: "form#add-to-cart ul.radio-button-block, div.selectSize, .size-select-container",
+          sizeOptionsInput:
+              "form#add-to-cart li.radio-button-size-block:not([hidden]) input[type=radio]:not([disabled]), .sizeSelect option",
+          submitButton:
+              "form#add-to-cart button[type=submit], form#cartform button[type=submit]",
+          selectedSku: "#cartform #selectedSku, select[name='sizeSelect']",
+        },
+        addToWishlistAnchor: "a[data-wishlist-item], a.addToWish, .false",
+        nonSizeAvailable:
+            "#form-size-not-found, form#add-to-cart li.radio-button-size-block:not([hidden]) input[type=radio][disabled]",
+        gallery: "#gallery, #prdMedia , div.slick-slider.slide-img.carousel.slick-initialized",
+        seeMore:
+            "div.tabs-products, .accordion-item, div.prd-description , .accordion-container",
+      },
+      value: {},
+      getTime() {
+        return Date.now();
+      },
+      getSku() {
+        if(buyPage) {
+          this.value.sku = d.querySelectorAll(this.element.addToCartForm.productInput)[1].value.split('-')[0];
+        }
+        if (!this.value.sku) {
+          const input = d.querySelector(this.element.addToCartForm.productInput);
+          if (!input) return null;
+          this.value.sku = input.value;
+          if(!this.value.sku) {
+            this.value.sku = input.innerHTML;
+          }
+        }
+        return this.value.sku;
+      },
+      getPrice() {
+        if (!this.value.price) {
+          const element = d.querySelector(this.element.productPrice);
+          if (!element) return null;
+          if (element.hasAttribute("content")) {
+            this.value.price = element.getAttribute("content");
+          }
+          else if (element.hasAttribute("data-price")) {
+            this.value.price = element.getAttribute("data-price");
+          }
+          else if (element.textContent) {
+            this.value.price = element.textContent.replace(/[^\d.-]/g, '');
+          }
+          else {
+            this.value.price = element.dataset.price;
+          }
+        }
+        return this.value.price;
+      },
+    };
+
+    const Game = {
+      rules: {
+        selectSize: 2,
+        galleryAction: 3,
+        seeMore: 2,
+        scroll: 1,
+      },
+      goal: 1,
+      isWinner() {
+        const { score } = SurfItem.get() || { score: 0 };
+        return score >= this.goal;
+      },
+    };
+
+    const SurfItem = {
+      init() {
+        this.set({
+          sku: Page.getSku(),
+          price: Page.getPrice(),
+          startAt: Page.getTime(),
+        });
+      },
+      get() {
+        const items = Storage.get("SurfItems") ?? [];
+        const item = items.find(
+            (item) => item.sku.split("-").shift() == Page.getSku()
+        );
+        return item;
+      },
+      set(data) {
+        const items = Storage.get("SurfItems") ?? [];
+        const item = items.find(
+            (item) => item.sku.split("-").shift() == Page.getSku()
+        );
+        if (item) Object.assign(item, data);
+        else if (data.sku) items.push(data);
+        Storage.set("SurfItems", items);
+      },
+      delete() {
+        const items = Storage.get("SurfItems") ?? [];
+        const index = items.findIndex(
+            (item) => item.sku.split("-").shift() == Page.getSku()
+        );
+        items.splice(index, 1);
+        Storage.set("SurfItems", items);
+      },
+    };
+
+    const Actions = {
+      init(event) {
+        if (Page.getSku()) {
+          Actions.registerSku();
+          Listeners.register();
+        }
+      },
+      registerSku(event) {
+        SurfItem.init();
+      },
+      unregisterSku(event) {
+        SurfItem.delete();
+      },
+      enhanceSku(event) {
+        const { value } = route ? event.target.closest("[data-value]").dataset : event.target.closest("[value]").dataset;
+        SurfItem.set({ sku: value });
+      },
+      addScore(event) {
+        const item = SurfItem.get();
+        if (item) {
+          const el = event.type == "scroll" ? d.body : this;
+          const { score } = item;
+          const { points } = el.dataset;
+          SurfItem.set({
+            score: (+score || 0) + (+points || 0),
+          });
+        }
+      },
+      getHostAliceToPwaSSC() {
+        const getCookieValue = (cookieName) => {
+          const cookies = document.cookie.split(";").map(cookie => cookie.trim());
+          for (const cookie of cookies) {
+            const [name, value] = cookie.split("=");
+            if (name.trim() === cookieName) {
+              return value;
+            }
+          }
+          return null;
+        };
+
+        const DFTFPValue = getCookieValue("DFTFP");
+        const CustomerCookie = getCookieValue("customer");
+        const hostname = window.location.hostname;
+
+        let hostAlice = `https://www.${hostname.replace(/^m\./, '')}`;
+        let domain = hostname.replace(/^m/, '');
+
+        if (hostname.includes(".dafiti.la")) {
+          hostAlice = `https://${hostname.replace(/^m-/, 'alice-')}`;
+          domain = '.' + hostAlice.replace(/^https?:\/\//, '').split('.').slice(-4).join('.');
+        }
+
+        if (DFTFPValue != null) {
+          document.cookie = `DFTFP=${DFTFPValue}; domain=${domain};`;
+        }
+        if (CustomerCookie != null) {
+          document.cookie = `customer=${CustomerCookie}; domain=${domain};`;
+        }
+
+        return hostAlice;
+      },
+      sendTrackInfo() {
+        if (!route){
+          const selectedSku = d.querySelector(Page.element.addToCartForm.selectedSku).value;
+          if(selectedSku != ""){
+            SurfItem.set({ sku: selectedSku });
+          }
+        }
+        const { sku, price, score, startAt } = SurfItem.get();
+        const endAt = Page.getTime();
+        const duration = Math.floor((endAt - startAt) / 1000);
+        const query = new URLSearchParams([
+          ["sku", sku],
+          ["price", price],
+          ["score", score],
+          ["duration", duration],
+        ]);
+        let url = `/marketing/track/pdp?${query.toString()}`;
+        if(buyPage){
+          const hostAlice = this.getHostAliceToPwaSSC();
+          url = `${hostAlice}/marketing/track/pdp?${query.toString()}`;
+        }
+
+        const browserSupportsKeepalive = "keepalive" in new Request("");
+        if (browserSupportsKeepalive) {
+          fetch(url, {
+            method: "GET",
+            credentials: "include",
+            keepalive: true
+          });
+        } else {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', url, false);
+          xhr.withCredentials = true;
+          xhr.send();
+        }
+      },
+    };
+
+    const Listeners = {
+      register() {
+        this.addToCart();
+        this.addToWishlist();
+        this.scroll();
+        this.galleryAction();
+        this.seeMore();
+        this.selectSize();
+        if (route){
+          this.nonSizeAvailable();
+        }
+        this.quit();
+      },
+      selectSize() {
+        const optionsList = d.querySelector(
+            Page.element.addToCartForm.sizeOptionsList
+        );
+        optionsList.dataset.points = Game.rules.selectSize;
+        optionsList.addEventListener("click", Actions.addScore, { once: true });
+        if(!pageType){
+          d.querySelectorAll(Page.element.addToCartForm.sizeOptionsInput).forEach(
+              (element) => {
+                element.addEventListener("click", Actions.enhanceSku);
+              }
+          );
+        }
+      },
+      galleryAction() {
+        d.querySelectorAll(Page.element.gallery).forEach((element) => {
+          element.dataset.points = Game.rules.galleryAction;
+          element.addEventListener("mouseover", Actions.addScore, { once: true });
+          element.addEventListener("touchstart", Actions.addScore, { once: true });
+        });
+      },
+      seeMore() {
+        d.querySelectorAll(Page.element.seeMore).forEach((element) => {
+          element.dataset.points = Game.rules.seeMore;
+          element.addEventListener("mouseover", Actions.addScore, { once: true });
+        });
+      },
+      scroll() {
+        d.body.dataset.points = Game.rules.scroll;
+        w.addEventListener("scroll", Actions.addScore, { once: true });
+      },
+      addToCart() {
+        d.querySelectorAll(Page.element.addToCartForm.submitButton).forEach(
+            (element) => {
+              element.addEventListener("click", Actions.unregisterSku, {
+                once: true,
+              });
+            }
+        );
+      },
+      addToWishlist() {
+        d.querySelector(Page.element.addToWishlistAnchor).addEventListener(
+            "click",
+            Actions.unregisterSku,
+            { once: true }
+        );
+      },
+      nonSizeAvailable() {
+        d.querySelectorAll(Page.element.nonSizeAvailable).forEach((element) => {
+          const target =
+              element.tagName == "INPUT" && !!element.getAttribute("disabled")
+                  ? element.parentElement
+                  : element;
+          target.addEventListener("click", Actions.unregisterSku, {
+            once: true,
+          });
+        });
+      },
+      init() {
+        w.addEventListener("load", Actions.init(), { once: true });
+      },
+      reinit() {
+        w.addEventListener("visibilitychange", (event) => {
+          if (d.visibilityState == "visible") {
+            Actions.init();
+          }
+        });
+      },
+      quit() {
+        w.addEventListener("visibilitychange", (event) => {
+          if (d.visibilityState == "hidden" && Game.isWinner()) {
+            Actions.sendTrackInfo();
+            Actions.unregisterSku();
+            Listeners.reinit();
+          }
+        });
+      },
+    };
+
+    Listeners.init();
+  })(window, document);
+}, 1500);

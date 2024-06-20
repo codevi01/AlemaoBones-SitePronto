@@ -1,0 +1,71 @@
+class InputTitleComponent extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: "open" });
+        // Loads the template from the HTML file
+        this.shadowRoot.innerHTML = `
+            <style>
+                @import url("/vendor/dafiti/bootstrap/dist/components/input-title/css/input-title.css");
+                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&family=Roboto:wght@400;700&display=swap');
+            </style>
+            <div class="wrapper">
+                <input type="text"></input>
+                <span id="title"></span>
+                <span id="coin">R$</span>
+            </div>
+        `;
+
+        // Update the input content
+        const input = this.shadowRoot.querySelector('input');
+        const span = this.shadowRoot.querySelector('span');
+
+        if (this.hasAttribute('name')) {
+            input.setAttribute("name", this.getAttribute('name'));
+        }
+
+        if (this.hasAttribute('data-price')) {
+            input.value = this.getAttribute('data-price');
+        }
+
+        if (this.hasAttribute('data-type-price')) {
+            span.textContent = this.getAttribute('data-type-price');
+        }
+
+        // Adds an event listener to capture input changes
+        input.addEventListener('input', this.handleInputChange.bind(this));
+
+        if (this.hasAttribute('class')) {
+            input.parentElement.classList.add(this.getAttribute('class'));
+        }
+    }
+
+    handleInputChange(event) {
+        // Fire a 'value-price-change' custom event with the input value
+        const customEvent = new CustomEvent('value-price-change', {
+            bubbles: true, // Allow event to propagate to parent elements
+            composed: true, // Allow event to traverse shadow DOM boundaries
+            detail: {
+                value: event.target.value, // Input's current value
+                name: event.target.name // Input's current name
+            }
+        });
+        const input = this.shadowRoot.querySelector('input');
+        input.setAttribute("value", event.target.value);
+        this.dispatchEvent(customEvent);
+    }
+
+    static get observedAttributes() {
+        return ['class'];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (newValue.includes('errors')) {
+            const input = this.shadowRoot.querySelector('input');
+            const span = this.shadowRoot.querySelector('span');
+            input.style = 'border:1px solid #F46060';
+            span.style = 'color: #F46060';
+        }
+    }
+  }
+
+  customElements.get('input-title-component') || customElements.define('input-title-component', InputTitleComponent);

@@ -1,0 +1,36 @@
+"use strict";
+((w, d) => {
+  const Cookie = {
+    get(name) {
+      let match = d.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+      if (match) return match[2];
+    },
+    set(name, value, attributes) {
+      if (typeof attributes.expires === "number")
+        attributes.expires = new Date(Date.now() + attributes.expires * 864e5);
+      if (attributes.expires instanceof Date)
+        attributes.expires = attributes.expires.toGMTString();
+      let stringifiedAttributes = "";
+      for (let attributeName in attributes) {
+        if (!attributes[attributeName]) continue;
+        stringifiedAttributes += `; ${attributeName}`;
+        if (attributes[attributeName] === true) continue;
+        stringifiedAttributes += `=${attributes[attributeName].split(";")[0]}`;
+      }
+      return (d.cookie = `${name}=${value}${stringifiedAttributes}`);
+    },
+  };
+  const Storage = {
+    stg: w.sessionStorage,
+    set expires(flag) {
+      this.stg = flag ? w.sessionStorage : w.localStorage;
+    },
+    get(name) {
+      return JSON.parse(this.stg.getItem(name));
+    },
+    set(name, value) {
+      return this.stg.setItem(name, JSON.stringify(value));
+    },
+  };
+  w.V = { Cookie, Storage };
+})(window, document);

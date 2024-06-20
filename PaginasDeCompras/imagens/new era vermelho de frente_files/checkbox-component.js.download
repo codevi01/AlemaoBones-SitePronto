@@ -1,0 +1,48 @@
+class CheckboxComponent extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: "open" });
+        // Loads the template from the HTML file
+        this.shadowRoot.innerHTML = `
+            <style>
+                @import url("/vendor/dafiti/bootstrap/dist/components/checkbox/css/checkbox.css");
+                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&family=Roboto:wght@400;700&display=swap');
+            </style>
+            <label>
+                <input type="checkbox">
+                <span><slot></slot></span>
+            </label>
+        `;
+
+        // Add change listener to input
+        this.shadowRoot.querySelector("input").addEventListener("change", () => {
+            const isChecked = this.checked;
+            const checkboxName = this.getAttribute("name");
+            const value = this.getAttribute("value");
+            const event = new CustomEvent("checkboxChange", {
+                detail: { isChecked, checkboxName, value },
+            });
+
+            this.dispatchEvent(event);
+        });
+
+        if (this.hasAttribute('action')) {
+            this.onclick = () => eval(this.getAttribute('action'));
+        }
+
+        if (this.getAttribute('checked')) {
+            this.checked = true;
+        }
+    }
+
+    // Getter e setter para o atributo 'checked'
+    get checked() {
+        return this.shadowRoot.querySelector("input").checked;
+    }
+
+    set checked(value) {
+        this.shadowRoot.querySelector("input").checked = value;
+    }
+  }
+
+  customElements.get('checkbox-component') || customElements.define('checkbox-component', CheckboxComponent);

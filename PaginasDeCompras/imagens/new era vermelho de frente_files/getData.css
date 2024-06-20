@@ -1,0 +1,101 @@
+
+
+/* The Modal (background) */
+.CCmodal-econfy {
+    display: block;
+    position: fixed;
+    z-index: 9999999;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: #0807071f;
+}
+
+#CCmodal img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+    border-radius: 10px;
+}
+/* Modal Content */
+.CCmodal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    width: 90%;
+    max-width: 1200px;
+}
+
+.CCclose {
+    color: #984b4b;
+    z-index: 99999;
+    position: absolute;
+    top: 10%;
+    right: 28%;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+    .CCclose:hover,
+    .CCclose:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+/* Hide the slides by default */
+.mySlides {
+    display: none;
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+    color: #f2f2f2;
+    font-size: 12px;
+    padding: 8px 12px;
+    position: absolute;
+    top: 0;
+}
+
+/* Caption text */
+.caption-container {
+    text-align: center;
+    background-color: black;
+    padding: 2px 16px;
+    color: white;
+}
+
+img.demo {
+    opacity: 0.6;
+}
+
+.active,
+.demo:hover {
+    opacity: 1;
+}
+
+img.CChover-shadow {
+    transition: 0.3s;
+}
+
+.CChover-shadow:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#seloEconfy {
+    bottom: 0;
+    left: 0;
+}
+
+    #seloEconfy img {
+        width: 90px !important;
+        position: relative;
+        bottom: 0;
+        left: 0;
+        object-fit: cover;
+    }

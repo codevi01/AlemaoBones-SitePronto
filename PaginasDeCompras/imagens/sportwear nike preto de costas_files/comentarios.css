@@ -1,0 +1,22 @@
+.stars {
+    font-size: 0px;
+}
+
+.starn {
+    background: url('/assets/store/img/stars-old.png');
+    display: inline-block;
+    width: 37px;
+    height: 35px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.star-on { 
+    background-position: 0 -38px !important;
+}
+
+.ajuste-nota {
+    float: none;
+    display: inline;
+    font-size: 20px;
+}
